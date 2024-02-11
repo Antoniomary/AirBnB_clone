@@ -226,20 +226,6 @@ class HBNBCommand(cmd.Cmd):
         if line.endswith(".all()"):
             line = line[:-6]
             self.do_all(line)
-            # if not len(line):
-            #    print("** class name missing **")
-            """
-                else:
-                if line in self.all_classes.keys():
-                    all_instances = storage.all()
-                    objs = []
-                    for key, value in all_instances.items():
-                        if line in key:
-                            objs.append(str(value))
-                    print('[' + ", ".join(objs) + ']')
-                else:
-                    print("** class doesn't exist **")
-            """
         elif line.endswith(".count()"):
             line = line[:-8]
             self.count(line)
