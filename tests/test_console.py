@@ -3,7 +3,7 @@
     Test for console
 """
 import unittest
-from models.console import HBNNCommand
+from console import HBNBCommand
 
 
 class TestHBNBCommand(unittest.TestCase):
