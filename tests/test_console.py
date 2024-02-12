@@ -246,6 +246,15 @@ EOF  all  count  create  destroy  help  quit  show  update
                 HBNBCommand().onecmd(f"all {model}")
             self.assertEqual(expected + "\n", f.getvalue())
 
+        self.setUp()
+
+        for model in self.classes:
+            test_model = self.classes[model]()
+            expected = str([str(test_model)])
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"{model}.all()")
+            self.assertEqual(expected + "\n", f.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()
