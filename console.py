@@ -203,13 +203,6 @@ class HBNBCommand(cmd.Cmd):
 
         Usage: <class name>.count()
         """
-        cmd.Cmd.default(self, "count " + line)
-
-    def count(self, line):
-        """Counts the number of instances of a class
-
-        Usage: <class name>.count()
-        """
         if not line:
             print("** class name missing **")
             return
@@ -228,9 +221,6 @@ class HBNBCommand(cmd.Cmd):
         if line.endswith(".all()"):
             line = line[:-6]
             self.do_all(line)
-        elif line.endswith(".count()"):
-            line = line[:-8]
-            self.count(line)
         else:  # other commands are unknown
             cmd.Cmd.default(self, line)
 
@@ -241,9 +231,8 @@ class HBNBCommand(cmd.Cmd):
         if line == "EOF" or temp == "":
             pass
         # avoids the call to count command as count <class name>
-        elif temp.split()[0] == "count":
-            self.default(temp)
-            line = ""
+        elif temp.endswith(".count()"):
+            line = " ".join(["count", temp[:temp.find(".count()")]])
         elif ".show(" in temp and temp[-1] == ')':
             cmd = ("show", temp.find(".show("))
             arg = temp[cmd[1] + len(".show("):-1]
