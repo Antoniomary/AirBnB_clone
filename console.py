@@ -154,7 +154,6 @@ class HBNBCommand(cmd.Cmd):
         if arg_len < 4:
             print("** value missing **")
         else:
-            # TODO: add more checks to parse value
             value = arg[3].strip()
             value_len = len(value)
             if value_len > 1 and value.startswith('"'):
@@ -216,14 +215,6 @@ class HBNBCommand(cmd.Cmd):
         else:
             print("** class doesn't exist **")
 
-    def default(self, line):
-        """handles some special commands"""
-        if line.endswith(".all()"):
-            line = line[:-6]
-            self.do_all(line)
-        else:  # other commands are unknown
-            cmd.Cmd.default(self, line)
-
     def precmd(self, line):
         """checks the command before they are sent for further checks"""
         temp = line.strip()
@@ -233,6 +224,8 @@ class HBNBCommand(cmd.Cmd):
         # avoids the call to count command as count <class name>
         elif temp.endswith(".count()"):
             line = " ".join(["count", temp[:temp.find(".count()")]])
+        elif temp.endswith(".all()"):
+            line = " ".join(["all", temp[:temp.find(".all()")]])
         elif ".show(" in temp and temp[-1] == ')':
             cmd = ("show", temp.find(".show("))
             arg = temp[cmd[1] + len(".show("):-1]
