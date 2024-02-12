@@ -255,6 +255,76 @@ EOF  all  count  create  destroy  help  quit  show  update
                 HBNBCommand().onecmd(f"{model}.all()")
             self.assertEqual(expected + "\n", f.getvalue())
 
+    def test_do_show_error(self):
+        """Tests the show command errors"""
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("show")
+        s = "** class name missing **\n"
+        self.assertEqual(s, f.getvalue())
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd(".show()")
+        s = "** class name missing **\n"
+        self.assertEqual(s, f.getvalue())
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("show MyModel")
+        s = "** class doesn't exist **\n"
+        self.assertEqual(s, f.getvalue())
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("MyModel.show()")
+        s = "** class doesn't exist **\n"
+        self.assertEqual(s, f.getvalue())
+
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"show {model}")
+            s = "** instance id missing **\n"
+            self.assertEqual(s, f.getvalue())
+
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"{model}.show()")
+            s = "** instance id missing **\n"
+            self.assertEqual(s, f.getvalue())
+
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"show {model} wrong_id")
+            s = "** no instance found **\n"
+            self.assertEqual(s, f.getvalue())
+
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f'{model}.show("wrong_id")')
+            s = "** no instance found **\n"
+            self.assertEqual(s, f.getvalue())
+
+    def test_do_show(self):
+        """Tests the show command"""
+        id, objs = [], []
+        for model in self.classes:
+            test_model = self.classes[model]()
+            objs.append(test_model)
+            id.append(test_model.id)
+
+        i = 0
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"show {model} {id[i]}")
+            s = f"[{model}] ({id[i]}) {objs[i].__dict__}\n"
+            self.assertEqual(s, f.getvalue())
+            i += 1
+
+        i = 0
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f'{model}.show("{id[i]}")')
+            s = f"[{model}] ({id[i]}) {objs[i].__dict__}\n"
+            self.assertEqual(s, f.getvalue())
+            i += 1
+
 
 if __name__ == "__main__":
     unittest.main()
