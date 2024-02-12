@@ -275,6 +275,15 @@ class HBNBCommand(cmd.Cmd):
 
         return line
 
+    def default(self, line):
+        """runs for unknown commands or syntax"""
+        line_copy = line[:]
+        line = self.precmd(line)
+        if line_copy == line:
+            cmd.Cmd.default(self, line)
+        elif line:
+            self.onecmd(line)
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
