@@ -107,14 +107,23 @@ class TestFileStorage(unittest.TestCase):
 
     def test_reload(self):
         """test the reload method"""
-        test_model = self.test_model
+        temp = storage._FileStorage__objects
+        if os.path.exists(storage._FileStorage__file_path):
+            os.remove(storage._FileStorage__file_path)
+        storage._FileStorage__objects = {}
+        storage.save()
+        storage.reload()
+        objects = storage.all()
+        self.assertTrue(objects == {})
+
+        test_model = BaseModel()
+        storage.save()
         key = f"BaseModel.{test_model.id}"
         value = test_model
-        storage._FileStorage__objects = {key: value}
-        storage.save()
         storage.reload()
         objects = storage.all()
         self.assertEqual(len(objects), 1)
         expected = {key: value}
         self.assertEqual(objects.keys(), expected.keys())
         self.assertEqual(str(objects[key]), str(expected[key]))
+        storage._FileStorage__objects = temp
