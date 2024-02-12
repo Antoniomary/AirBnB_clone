@@ -3,13 +3,40 @@
     Test for console
 """
 import unittest
+import os
 from console import HBNBCommand
 from unittest.mock import patch
 from io import StringIO
+from models import storage
+from models.base_model import BaseModel
+from models.user import User
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
+from datetime import datetime
 
 
 class TestHBNBCommand(unittest.TestCase):
     """A class that tests the console"""
+
+    classes = {
+            "BaseModel": BaseModel,
+            "User": User,
+            "State": State,
+            "City": City,
+            "Place": Place,
+            "Amenity": Amenity,
+            "Review": Review,
+        }
+
+    def setUp(self):
+        """runs before any test"""
+        if os.path.exists(storage._FileStorage__file_path):
+            os.remove(storage._FileStorage__file_path)
+        storage.reload()
+        storage._FileStorage__objects = {}
 
     def test_help(self):
         """Tests the help command"""
@@ -143,6 +170,81 @@ EOF  all  count  create  destroy  help  quit  show  update
         with patch("sys.stdout", new=StringIO()) as f:
             HBNBCommand().onecmd("quit extra argument")
         self.assertEqual("", f.getvalue())
+
+    def test_do_create_error(self):
+        """Tests the create command errors"""
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("create")
+        s = "** class name missing **\n"
+        self.assertEqual(s, f.getvalue())
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("create Nothing")
+        s = "** class doesn't exist **\n"
+        self.assertEqual(s, f.getvalue())
+
+    def test_do_create(self):
+        """Tests the create command"""
+        storage.reload()
+        storage._FileStorage__objects = {}
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("create BaseModel")
+        store = storage.all()
+        key, value = None, None
+        for key in store:
+            value = store[key]
+            break
+        expected = value.__dict__["id"] + '\n'
+        self.assertEqual(expected, f.getvalue())
+
+    def test_do_count_error(self):
+        """Tests the count command errors"""
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("Dummy.count()")
+        s = "** class doesn't exist **\n"
+        self.assertEqual(s, f.getvalue())
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd(".count()")
+        s = "** class name missing **\n"
+        self.assertEqual(s, f.getvalue())
+
+    def test_do_count(self):
+        """Tests the count command"""
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"{model}.count()")
+            self.assertEqual("0\n", f.getvalue())
+
+        for model in self.classes:
+            self.classes[model]()
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"{model}.count()")
+            self.assertEqual("1\n", f.getvalue())
+
+    def test_do_all_error(self):
+        """Tests the all command error"""
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("all MyModel")
+        self.assertEqual("** class doesn't exist **\n", f.getvalue())
+
+    def test_do_all(self):
+        """Tests the all command"""
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("all")
+        self.assertEqual("[]\n", f.getvalue())
+
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"all {model}")
+            self.assertEqual("[]\n", f.getvalue())
+
+        for model in self.classes:
+            test_model = self.classes[model]()
+            expected = str([str(test_model)])
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"all {model}")
+            self.assertEqual(expected + "\n", f.getvalue())
 
 
 if __name__ == "__main__":
