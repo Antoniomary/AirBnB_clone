@@ -89,6 +89,7 @@ class HBNBCommand(cmd.Cmd):
         instance_to_delete = arg[0] + '.' + arg[1]
         if instance_to_delete in all_instances.keys():
             del all_instances[instance_to_delete]
+            storage.save()
         else:
             print("** no instance found **")
 
