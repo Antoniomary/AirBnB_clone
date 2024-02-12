@@ -325,6 +325,92 @@ EOF  all  count  create  destroy  help  quit  show  update
             self.assertEqual(s, f.getvalue())
             i += 1
 
+    def test_do_destroy_error(self):
+        """Tests the destroy command errors"""
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("destroy")
+        s = "** class name missing **\n"
+        self.assertEqual(s, f.getvalue())
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd(".destroy()")
+        s = "** class name missing **\n"
+        self.assertEqual(s, f.getvalue())
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("destroy MyModel")
+        s = "** class doesn't exist **\n"
+        self.assertEqual(s, f.getvalue())
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("MyModel.destroy()")
+        s = "** class doesn't exist **\n"
+        self.assertEqual(s, f.getvalue())
+
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"destroy {model}")
+            s = "** instance id missing **\n"
+            self.assertEqual(s, f.getvalue())
+
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"{model}.destroy()")
+            s = "** instance id missing **\n"
+            self.assertEqual(s, f.getvalue())
+
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"destroy {model} wrong_id")
+            s = "** no instance found **\n"
+            self.assertEqual(s, f.getvalue())
+
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f'{model}.destroy("wrong_id")')
+            s = "** no instance found **\n"
+            self.assertEqual(s, f.getvalue())
+
+    def test_do_destroy(self):
+        """Tests the destroy command"""
+        id, objs = [], []
+        for model in self.classes:
+            test_model = self.classes[model]()
+            objs.append(test_model)
+            id.append(test_model.id)
+
+        i = 0
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"destroy {model} {id[i]}")
+            self.assertEqual('', f.getvalue())
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"show {model} {id[i]}")
+            s = "** no instance found **\n"
+            self.assertEqual(s, f.getvalue())
+            i += 1
+
+        id, objs = [], []
+        for model in self.classes:
+            test_model = self.classes[model]()
+            objs.append(test_model)
+            id.append(test_model.id)
+
+        i = 0
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f'{model}.destroy("{id[i]}")')
+            self.assertEqual('', f.getvalue())
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"show {model} {id[i]}")
+            s = "** no instance found **\n"
+            self.assertEqual(s, f.getvalue())
+            i += 1
+
+
+if __name__ == "__main__":
+    unittest.main()
+
 
 if __name__ == "__main__":
     unittest.main()
