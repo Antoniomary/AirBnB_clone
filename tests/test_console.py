@@ -116,6 +116,34 @@ EOF  all  count  create  destroy  help  quit  show  update
         \n'''
         self.assertEqual(s, f.getvalue())
 
+    def test_do_EOF(self):
+        """Tests EOF commmand"""
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("EOF")
+        output = f.getvalue()
+        self.assertEqual("\n", output)
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("EOF extra argument")
+        output = f.getvalue()
+        self.assertEqual("\n", output)
+
+    def test_emptyline(self):
+        """Tests emptyline method"""
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("")
+        self.assertEqual("", f.getvalue())
+
+    def test_do_quit(self):
+        """Tests quit commmand"""
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("quit")
+        self.assertEqual("", f.getvalue())
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("quit extra argument")
+        self.assertEqual("", f.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()
