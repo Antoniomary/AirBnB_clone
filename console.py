@@ -192,8 +192,10 @@ class HBNBCommand(cmd.Cmd):
         try:
             dict = eval(dict)
             for key, value in dict.items():
-                self.do_update(" ".join([cls, id, str(key), str(value)]))
+                line = " ".join([cls, id, str(key), '"' + str(value) + '"'])
+                self.do_update(line)
         except Exception:
+            print("Error in dictionary")
             pass
 
     def do_count(self, line):
@@ -262,10 +264,10 @@ class HBNBCommand(cmd.Cmd):
             if len(tmp) == 2:
                 id = tmp[0].strip()
                 tmp = tmp[1].strip()
-                if tmp[1][0] == '{' and tmp[1][-1] == '}':
+                if tmp[0] == '{' and tmp[-1] == '}':
                     if id[0] == '"' and id[-1] == '"':
                         id = id[1:-1]
-                    self.update_alt_dict(cls, id, tmp[1])
+                    self.update_alt_dict(cls, id, tmp)
                     return ""
 
             args = args.split(',', 2)
