@@ -407,9 +407,136 @@ EOF  all  count  create  destroy  help  quit  show  update
             self.assertEqual(s, f.getvalue())
             i += 1
 
+    def test_do_update_error(self):
+        """Tests the update command errors"""
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("update")
+        s = "** class name missing **\n"
+        self.assertEqual(s, f.getvalue())
 
-if __name__ == "__main__":
-    unittest.main()
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd(".update()")
+        s = "** class name missing **\n"
+        self.assertEqual(s, f.getvalue())
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("update MyModel")
+        s = "** class doesn't exist **\n"
+        self.assertEqual(s, f.getvalue())
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("MyModel.update()")
+        s = "** class doesn't exist **\n"
+        self.assertEqual(s, f.getvalue())
+
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"update {model}")
+            s = "** instance id missing **\n"
+            self.assertEqual(s, f.getvalue())
+
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"{model}.update()")
+            s = "** instance id missing **\n"
+            self.assertEqual(s, f.getvalue())
+
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"update {model} wrong_id")
+            s = "** no instance found **\n"
+            self.assertEqual(s, f.getvalue())
+
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f'{model}.update("wrong_id")')
+            s = "** no instance found **\n"
+            self.assertEqual(s, f.getvalue())
+
+        id, objs = [], []
+        for model in self.classes:
+            test_model = self.classes[model]()
+            # test_model.name = "Airbnb"
+            test_model.save()
+            objs.append(test_model)
+            id.append(test_model.id)
+
+        i = 0
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"update {model} {id[i]}")
+            s = "** attribute name missing **\n"
+            self.assertEqual(s, f.getvalue())
+
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f'{model}.update("{id[i]}")')
+            self.assertEqual(s, f.getvalue())
+            i += 1
+
+        i = 0
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"update {model} {id[i]} name")
+            s = "** value missing **\n"
+            self.assertEqual(s, f.getvalue())
+
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f'{model}.update("{id[i]}", "name")')
+            self.assertEqual(s, f.getvalue())
+            i += 1
+
+        i = 0
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                st = f'{model}.update("{id[i]}", {{"name": HBnB}})'
+                HBNBCommand().onecmd(st)
+            self.assertEqual("Error in dictionary\n", f.getvalue())
+            i += 1
+
+    def test_do_update(self):
+        """Tests the update command"""
+        id, objs = [], []
+        for model in self.classes:
+            test_model = self.classes[model]()
+            test_model.name = "Airbnb"
+            test_model.save()
+            objs.append(test_model)
+            id.append(test_model.id)
+
+        i = 0
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f'update {model} {id[i]} name "HBnB"')
+            self.assertEqual('', f.getvalue())
+
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"show {model} {id[i]}")
+            self.assertIn("'name': 'HBnB'", f.getvalue())
+            i += 1
+
+        i = 0
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                st = f'{model}.update("{id[i]}", "name", "AirBnB")'
+                HBNBCommand().onecmd(st)
+            self.assertEqual('', f.getvalue())
+
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"show {model} {id[i]}")
+            self.assertIn("'name': 'AirBnB'", f.getvalue())
+            i += 1
+
+        i = 0
+        for model in self.classes:
+            with patch("sys.stdout", new=StringIO()) as f:
+                st = f'{model}.update("{id[i]}", {{"name": "HBnB"}})'
+                HBNBCommand().onecmd(st)
+            self.assertEqual('', f.getvalue())
+
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd(f"show {model} {id[i]}")
+            self.assertIn("'name': 'HBnB'", f.getvalue())
+            i += 1
 
 
 if __name__ == "__main__":
