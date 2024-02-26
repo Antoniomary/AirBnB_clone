@@ -1,0 +1,142 @@
+.places {
+	text-align: center;
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: center;
+}
+
+.places h1{
+	font-size: 30px;
+	width: 100%;
+	text-align: left;
+	margin: 30px 0 0;
+}
+
+.places article {
+	width: 390px;
+	padding: 20px;
+	margin: 20px;
+	border: 2px solid red;
+	border-radius: 4px;
+	display: flex;
+	flex-direction: column;
+	vertical-align: top;
+	position: relative;
+	z-index: -1;
+}
+
+.places article h2 {
+	font-size: 30px;
+	margin-top: 0px;
+	height: 75px;
+}
+
+.price_by_night {
+	color: #FF5A5F;
+	border: 4px solid red;
+	min-width: 60px;
+	height: 60px;
+	font-size: 30px;
+	border-radius: 50%;
+	display: flex;;
+	justify-content: center;
+	align-items: center;
+	padding: 10px;
+	position: absolute;
+	top: 20px;
+	right: 20px;
+}
+
+.information {
+	height: 80px;
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+	display: flex;
+	justify-content: center;
+	font-size: 16px;
+}
+
+.max_guest {
+	background-image: url("../images/group.png");
+}
+
+.number_rooms {
+	background-image: url("../images/bed.png");
+}
+
+.number_bathrooms {
+	background-image: url("../images/bath.png");
+}
+
+.information div {
+	width: 100px;
+	background-repeat: no-repeat;
+	background-position: center;
+	height: 80px;
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+}
+
+.user,
+.description {
+	text-align: left;
+	padding-top: 10px;
+	line-height: 20px;
+}
+
+.places .amenities,
+.places .reviews {
+	margin-top: 40px;
+	text-align: left;
+}
+
+.places .amenities h2,
+.places .reviews h2 {
+	font-size: 20px;
+	border-bottom: 1px solid black;
+	height: 30px;
+}
+
+.places div ul {
+	padding-left: 0;
+}
+
+.places .amenities ul li {
+	list-style-type: none;
+	background-repeat: no-repeat;
+	background-size: contain;
+	padding-left: 7%;
+	margin-bottom: 10px;
+}
+
+.places .amenities ul li:nth-of-type(1) {
+	background-image: url("../images/tv.png");
+}
+
+.places .amenities ul li:nth-of-type(2) {
+	background-image: url("../images/wifi.png");
+}
+
+.places .amenities ul li:nth-of-type(3) {
+	background-image: url("../images/pets.png");
+}
+
+.places .reviews ul li {
+	list-style-type: none;
+	margin-bottom: 10px;
+}
+
+.reviews h3,
+.reviews p {
+	margin: 0;
+	padding: 0;
+}
+
+.reviews h3 {
+	font-size: 14px;
+}
+
+.reviews p {
+	font-size: 14px;
+}
